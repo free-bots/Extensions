@@ -5,6 +5,7 @@ declare(strict_types=1);
 final class ImageProxyExtension extends Minz_Extension {
 	// Defaults
 	private const PROXY_URL = 'https://wsrv.nl/?url=';
+	private const USE_FRESHRSS_URL = "{FRESHRSS-HOST}";
 	private const SCHEME_HTTP = true;
 	private const SCHEME_HTTPS = false;
 	private const SCHEME_DEFAULT = 'auto';
@@ -107,7 +108,11 @@ final class ImageProxyExtension extends Minz_Extension {
 		if (FreshRSS_Context::userConf()->attributeBool('image_proxy_url_encode')) {
 			$url = rawurlencode($url);
 		}
-		return FreshRSS_Context::userConf()->attributeString('image_proxy_url') . $url;
+		$imageProxyUrl = FreshRSS_Context::userConf()->attributeString('image_proxy_url');
+		$server_ip = $_SERVER['HTTP_HOST'];
+		$server_ip = explode(":", $server_ip)[0];
+		$urlWithoutPlaceholders = str_replace(self::USE_FRESHRSS_URL, $server_ip, $imageProxyUrl);
+		return $urlWithoutPlaceholders . $url;
 	}
 
 	/**
